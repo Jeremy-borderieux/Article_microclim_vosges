@@ -1,0 +1,7 @@
+"rn";"type";"Estimate";"Std. Error";"range";"effect_size";"Pr(>|t|)"
+"(Intercept)";NA;16,2;0,812;NA;NA;"<10-4"
+"mnt_25_vosges";"Elevation";-0,00672;0,000299;"475.69 : 1203.17";-4,89;"<10-4"
+"Heat_load_index_25";"Topography";5,47;1,22;"0.335 : 0.951";3,37;"<10-4"
+"canopy_cover_glama";"Topography";0,0346;0,0109;"0.147 : 1";0,0295;"0.00311"
+"ipv_25";"Canopy";0,481;0,256;"79.004 : 100";10,1;"0.0682"
+"Heat_load_index_25:canopy_cover_glama";NA;-0,0547;0,0162;NA;NA;"0.00171"

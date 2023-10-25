@@ -1,0 +1,6 @@
+"rn";"type";"Estimate";"Std. Error";"range";"effect_size";"variance";"Pr(>|t|)"
+"(Intercept)";NA;21,1;1,11;NA;NA;NA;"<10-4"
+"mnt_25_vosges";"Elevation";-0,00684;0,000311;"475.69 : 1203.17";-4,98;87,4;"<10-4"
+"Heat_load_index_25";"Topography";1,53;0,333;"0.335 : 0.951";0,945;3,95;"<10-4"
+"ipv_25";"Topography";0,656;0,276;"0.147 : 1";0,56;3,95;"0.022"
+"tree_density_2018";"Canopy";-0,0272;0,0115;"79.004 : 100";-0,57;0,817;"0.0229"
