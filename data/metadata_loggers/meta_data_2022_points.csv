@@ -1,66 +1,66 @@
-site_ID;date_setup;time;weather;topographic_pos;aspect;slope;canopy_cover_glama;herbacous_cover;plantation;access_note.x;V17;in_soil_1;hat_t3_1;t2_in_soil_1;hat_t2_1;right_place_1;all_good_1;date_revisite_1;Revisite
-H_N_1;27/05/2021;14:24;Cloudy;5;398;;87,12;17,92;0;2;NA;0;1;0;NA;1;0;06/07/2022; trouve au bon endroit mais hors du sol avec capuchon
-H_N_2;28/05/2021;10:15;Sunny;6;381;;91,23;8,25;0;2;NA;0;1;0;0;1;0;23/08/2022;trouve hors du sol sans chapeau t2 chaterton autour t3 pour maintenir capuchon
-H_N_3;30/06/2021;18:00;Rainy;7;396;;89,33;1,93;0;01-févr;NA;1;1;1;NA;1;1;24/08/2022;retrouve dans le sol, avec capuchon, t2 un peu sous terre
-H_N_4;30/06/2021;14:00;Rainy;7;3;;85,72;24,75;0;01-févr;NA;0;0;0;0;1;0;17/08/2022; trouvé hors du sol, capuchon détruit, replanté à sa place
-H_N_5;08/07/2021;11:47;cloudy;6;367;;84,13;3,41;0;1;NA;1;1;NA;1;1;1;06/07/2022; Trouve tout bien
-H_N_6;08/07/2021;16:35;cloudy;7;19;;91,81;0,32;0;3;NA;0;1;0;NA;0;0;17/08/2022; trouvé hors du sol 2 metres plus bas, avec capuchon, mais T3 plus chaud que T1 et T2 ?, replanté à l'endroit initial
-H_N_7;08/07/2021;14:08;cloudy;10;26;;89,65;2,35;0;3;NA;0;1;0;NA;0;0;NA; trouvé hors du sol, capuchon cassé mais en place, panne, remplacé par 94207960
-H_N_7;08/07/2021;14:08;cloudy;10;26;;89,65;2,35;0;3;NA;0;1;0;NA;0;0;NA; trouvé hors du sol, capuchon cassé mais en place, panne, remplacé par 94207960
-H_N_8;07/07/2021;;sunny/cloudy;7;;;;87,44;0;3;NA;0;1;0;1;0;0;13/10/2022; trouve hors du sol avec capuchon, 3 metre plus bas
-H_N_8_2;08/07/2021;20:08;cloudy;11;40;;93,88;1,6;0;1;NA;1;1;1;NA;1;1;17/08/2022; trouve avec capuchon, mais tres enterre dans littiere. t2 sous le sol?
-H_S_1;27/05/2021;17:10;Cloudy/sunny;5;200;;90,31;10,45;0;1;NA;1;1;NA;1;1;1;16/06/2022;bien en place top
-H_S_1_2;09/07/2021;18:31;sunny/cloudy;5;220;;69,72;4,58;0;1;NA;1;1;1;NA;1;1;16/06/2022;trouve bien, branche morte sur t2
-H_S_2;01/07/2021;10:46;Cloudy;7;189;;87,27;0,36;0;1;NA;0;1;0;NA;1;0;06/07/2022; Avec chapeau mais hors de terre
-H_S_3;28/05/2021;13:11;Sunny;10;195;;84,41;9,3;0;2;NA;0;0;0;1;1;0;24/08/2022; trouve hors du sol, au bon endroit. capuchon t2 ok, pas de capuchon t3
-H_S_4;26/05/2021;15:10;Cloudy;7;215;;77,42;8,8;0;;NA;0;0;0;0;1;0;22/08/2022; trouve au bon endroit mais hors du sol., capuchin juste enleve. replante mais t2 un peu dans le sol.
-H_S_5;30/06/2021;12:23;Rainy;7;188;;88,43;0,81;0;1;NA;1;0;NA;1;1;0;16/06/2022;trouve sans chapeau 16 p06 22
-H_S_6;08/07/2021;18:18;cloudy;10;230;;88,19;2,17;0;1;NA;1;1;1;NA;1;1;17/08/2022; trouve avec capuchon , dans le sol, mais t2 un peu trop dans la littiere
-H_S_7;28/05/2021;17:33;Sunny;10;216;;73,89;0,1;0;entre 1 et 2;NA;0;1;0;1;0;0;23/08/2022; trouve hors du sol 2m plus m plus bas avec capuchons. remis a sa place
-L_N_1;20/05/2021;14:46;cloudy;5;47;;35,51;33,7;0;2;NA;0;0;0;1;0;0;24/08/2022;trouve hors du sol 2 mettre plus bas, capuchon detruit et absent. replace en enterrant t2. capuchon t2 ok, crottes fraiches
-L_N_2;27/05/2021;10:53;Cloudy/sunny;5;377;;30,91;19,33;0;2;NA;NA;NA;NA;NA;NA;0;NA;pas retrouvé, chez l'onf ? martelage! replacé par 94195463
-L_N_2;27/05/2021;10:53;Cloudy/sunny;5;377;;30,91;19,33;0;2;NA;NA;NA;NA;NA;NA;0;NA;pas retrouvé, chez l'onf ? martelage! replacé par 94195463
-L_N_3;09/07/2021;16:47;sunny/cloudy;7;390;;35,6;37,91;0;4;NA;0;0;0;NA;1;0;24/08/2022; trouve couché, au bon endroit, mais t1 un peu dans le sol, t2 ok, t3 un peu enterre, a pas laire si chaud. replante au bon endroit
-L_N_4;26/05/2021;12:50;Heavy rain/cloudy;7;41;;37,21;45;1;2;NA;0;0;0;1;1;0;22/08/2022; trouve hors du sol, capuchon cassé, t3 et t2 pas meme temp ? replace au meme endroit
-L_N_5;09/07/2021;11:45;Cloudy/sunny;5;381;;20,63;10,08;0;2;NA;NA;NA;NA;NA;NA;0;NA; pas retrouve, pas de traces, remplacé par 94195502 le 22 aout 22
-L_N_5;09/07/2021;11:45;Cloudy/sunny;5;381;;20,63;10,08;0;2;NA;NA;NA;NA;NA;NA;0;NA; pas retrouve, pas de traces, remplacé par 94195502 le 22 aout 22
-L_N_6;07/07/2021;;sunny/cloudy;5;;;;50,88;0;3;NA;0;1;0;1;0;0;13/10/2022; trouve hors du sol avec capuchon, 3 metre plus bas
-L_N_7;28/05/2021;15:28;Sunny;10;360;;70,5;0;0;entre 1 et 2;NA;0;0;0;NA;0;0;23/08/2022; trouve hors du sol sans capuchon trouve 1 m plus bas. replante avec t2 un peu dans le sol
-L_N_8;07/07/2021;;sunny/cloudy;10;;;;42,74;0;3;NA;0;1;1;1;1;0;13/10/2022; trouve hors du sol, lame verte cassé, t2 sous litiere, t3 presque dans littière, mort, remplacé par ,,,
-L_S_1;20/05/2021;12:03;sunny/cloudy;5;160;;27,49;22;0;1;NA;0;0;0;0;1;0;24/08/2022; hors du sol au bon endroit, pas de capuchon t3,capuchon t2 releve, t1 en plein soleil. cassé en haut, machouillé
-L_S_2;20/05/2021;17:24;cloudy;6;200;;54,54;13,4;0;3;NA;1;1;1;1;1;1;24/08/2022; trouve au top du top, bon endroit, dans le sol. peut etre t2 un peu enseveli
-L_S_3;27/05/2021;19:04;sunny/cloudy;6;167;;24,47;26,22;0;1;NA;0;1;0;1;1;0;16/06/2022;avec chapeau mais arrache, au bon endroit
-L_S_4;01/07/2021;13:15;sunny/cloudy;7;245;;42,32;17,56;0;1;NA;2;1;0;1;1;0;06/07/2022; Capuchon en place, en terre mais déterre de qq cm, t1 hors sol, a été déplacé, replanté par rapport aux photos
-L_S_5;02/07/2021;11:20;Sunny;7;260;;47,26;2,43;0;3;NA;1;1;1;1;1;1;23/08/2022; trouve  au bon endroit dans le sol. t2 dans le sol. capuchon en place
-L_S_6;28/05/2021;16:27;Sunny;10;194;;32,23;2,1;0;entre 1 et 2;NA;0;1;0;NA;0;0;23/08/2022; trouve hors du sol avec tous ses capuchons. tombe 2 m plus bas et 1 m à droite de de sa position d'origine.
-L_S_7;02/07/2021;17:38;cloudy;10;220;;70,87;60,23;0;1;NA;0;0;0;NA;1;0;NA; trouve hors du sol t1 casse en deux (lame verte casse en deux) capuchon t3 enleve et t2 abime. au bon endroit. remplace par 94195493 le 23/08/22 17h37
-L_S_7;02/07/2021;17:38;cloudy;10;220;;70,87;60,23;0;1;NA;0;0;0;NA;1;0;NA; trouve hors du sol t1 casse en deux (lame verte casse en deux) capuchon t3 enleve et t2 abime. au bon endroit. remplace par 94195493 le 23/08/22 17h37
-L_S_8;02/07/2021;15:51;cloudy;10;220;;65,74;0,71;0;1;NA;1;1;1;0;1;1;06/07/2022;En terre mais pas de capuchon t2 bien enterré att
-cad_H_1;01/07/2021;12:06;sunny/cloudy;5;204;;71,1;19,38;0;01-févr;NA;0;1;0;1;1;0;24/08/2022; hors du sol 50 cm plus bas, avec tout ses xhapeau. bien replante mais t2 un peu sol
-cad_H_1_2;24/08/2022;13:30;Sunny;;300;;93,24;;;2;NA;NA;NA;NA;NA;NA;NA;NA; 
-cad_H_2;28/05/2021;11:47;Sunny;7;6;;88,09;1,01;0;3;NA;0;1;0;0;1;0;24/08/2022; trouve hors du sol au bon endroit. capuchons ok. capuchon t2 remonté
-cad_H_3;30/06/2021;16:50;Rainy;5;150;;88,29;0,88;0;1;NA;0;0;0;NA;0;0;16/06/2022;retrouve 4m plud bas arrache pas de chapeau
-cad_H_4;02/07/2021;13:08;Sunny;5;307;;86,65;3,38;0;2;NA;0;1;0;0;0;0;23/08/2022; trouve hors de terre pas de capuchon sur t2 deplace sur 5 m direction sud ouest
-cad_H_5;01/07/2021;14:48;sunny/cloudy;5;95;;87,25;3,57;0;01-févr;NA;0;1;0;1;1;0;24/08/2022; trouve hors du sol, 50 cm plus bas, avec tout les capuchons. replacé mais t2 sol
-cad_H_6;02/07/2021;16:45;cloudy;7;295;;78,67;0,37;0;02-mars;NA;0;1;0;0;0;0;23/08/2022; trouve hors sol 2m plus bas entre 2 arbres avec capuchon mais t2 un peu releve capuchon t3 abime
-cad_L_1;27/05/2021;15:42;Cloudy;6;195;;80,29;3,35;0;3;NA;0;1;0;NA;0;0;24/08/2022; trouve hors du sol, 1 metre plus bas, capchon t3 endommage legerement. replante t2 dans la littiere
-cad_L_2;27/05/2021;09:34;Cloudy;5;384;;76,65;38,35;0;1;NA;2;1;0;1;1;0;06/07/2022; Capteur retrouvé entier mais superficiellement planté comme si detere
-cad_L_3;07/07/2021;;sunny/cloudy;10;;;;89,44;0;01-févr;NA;1;0;NA;NA;0;0;22/08/2022; trouve planté mais 3 metre plus bas, tres proche d'un arbre dans la pente, pas de capuchon. replace a lendroit initale avec capuchon
-cad_L_4;09/07/2021;15:30;Cloudy/sunny;6;270;;92,27;2,56;0;3;NA;1;1;1;1;1;1;24/08/2022; trouve en place, dans le sol, capuchon et position ok t2 a moitie dans le sol
-cad_L_5;09/07/2021;11:00;Cloudy/sunny;10;85;;88,13;0,38;0;2;NA;0;1;0;1;1;0;22/08/2022; trouve hors du sol mais avec capuchon. au bon endroit , partie haut du thermoletre cassé mais fonctionne quand meme
-cad_L_6;02/07/2021;14:45;sunny/cloudy;10;290;;64,15;2,73;0;1;NA;2;1;0;1;1;0;23/08/2022; trouve au bon endroit avec tous les capuchons. plante superficiellement (2 cm au dessus du sol)
-cad_L_7;01/07/2021;15:47;sunny/cloudy;10;190;;83,86;3,93;0;1;NA;0;1;0;NA;1;0;06/07/2022; Capuchon mais sorti de terre
-cad_L_8;01/07/2021;17:17;sunny/cloudy;10;245;;85,58;19,94;0;1;NA;1;0;1;1;1;0;NA;En terre mais pas de capuchon, mort, remplacé par 94195464
-cad_L_8;01/07/2021;17:17;sunny/cloudy;10;245;;85,58;19,94;0;1;NA;1;0;1;1;1;0;NA;En terre mais pas de capuchon, mort, remplacé par 94195464
-new1;17/06/2022;18:50;sunny; ; ; ;; ; ;1;NA;NA;NA;NA;NA;NA;NA;NA; 
-slope_H_1;26/05/2021;16:41;Cloudy;5;273;;75,4;15,1;0;1;NA;0;0;0;0;0;0;16/06/2022;trouvé 4mettre plus bas, sans chapeau sorti e terte
-slope_H_2;26/05/2021;10:57;Heavy rain/cloudy;6;360;;80,41;10;0;3;NA;0;1;1;1;1;0;22/08/2022; trouve hors du sol, avec capuchon, replace au bon endroit, t2 touche sol
-slope_H_4;02/07/2021;10:32;Sunny;5;275;;88,76;2,96;0;3;NA;0;0;0;0;1;0;23/08/2022; trouve au bon endroit hors du sol sans capuchon et coupolle t2 remontee. replante t2 un peu dans le sol
-slope_H_5;30/06/2021;15:11;Rainy;7;174;;88,63;12,37;0;01-févr;NA;0;1;0;NA;1;0;17/08/2022; trouvé hors du sol, un petit peu déplacé, capuchon  abimé, replanté à l'endroit initial
-slope_H_7;07/07/2021;;sunny/cloudy;10;;;;74,74;0;3;NA;0;1;1;1;0;0;13/10/2022; trouve hors du sol avec capuchon, 3 metre plus bas, T3 assez enseveli sous la littière
-slope_H_8;01/07/2021;18:21;sunny/cloudy;10;225;;59;17,01;0;01-févr;NA;1;1;1;1;1;1;23/08/2022; trouve au bon endroit plante dans le sol capuchon t2 et t3 legerement abime t2 dans le sol
-slope_L_2;27/05/2021;12:24;sunny/cloudy;9;365;;69,44;13,53;0;1;NA;0;1;0;NA;1;0;06/07/2022; Retrouve avec chapeau mais déterré
-slope_L_3;07/07/2021;;sunny/cloudy;5;;;;85,17;0;01-févr;NA;0;1;0;NA;1;0;22/08/2022; trouve hors du sol avec capuchon
-slope_L_4;30/06/2021;11:28;Rainy;9;373;;88,99;1,58;0;1;NA;NA;NA;NA;NA;NA;0;NA; 
-slope_L_5;09/07/2021;12:47;Cloudy/sunny;11;180;;74,84;3,16;0;2;NA;1;1;1;1;1;1;22/08/2022; trouve en place avec capuchon. t2 sous litiere
-slope_L_6;08/07/2021;15:54;cloudy;9;40;;87,75;14,49;0;3;NA;1;0;1;NA;1;0;17/08/2022; trouvé en place dans le sol, mais capuchon enlevé. T2 sous la litiere
+site_ID;date_setup;time;weather;topographic_pos;aspect;slope;canopy_cover_glama;herbacous_cover;plantation;access_note;in_soil_1;hat_t3_1;t2_in_soil_1;hat_t2_1;right_place_1;all_good_1;date_revisite_1;variable;sensor_ID
+new1;17/06/2022;18:50;sunny; ; ; ;; ; ;1;NA;NA;NA;NA;NA;NA;NA;sensor_ID;94195409
+L_N_2;27/05/2021;10:53;Cloudy/sunny;5;377;;30,91;19,33;0;2;NA;NA;NA;NA;NA;0;NA;sensor_ID_2;94195463
+cad_L_8;01/07/2021;17:17;sunny/cloudy;10;245;;85,58;19,94;0;1;1;0;1;1;1;0;NA;sensor_ID_2;94195464
+cad_H_1_2;24/08/2022;13:30;Sunny;;300;;93,24;;;2;NA;NA;NA;NA;NA;NA;NA;sensor_ID;94195488
+L_S_7;02/07/2021;17:38;cloudy;10;220;;70,87;60,23;0;1;0;0;0;NA;1;0;NA;sensor_ID_2;94195493
+L_N_5;09/07/2021;11:45;Cloudy/sunny;5;381;;20,63;10,08;0;2;NA;NA;NA;NA;NA;0;NA;sensor_ID_2;94195502
+L_S_1;20/05/2021;12:03;sunny/cloudy;5;160;;27,49;22;0;1;0;0;0;0;1;0;24/08/2022;sensor_ID;94207901
+L_N_1;20/05/2021;14:46;cloudy;5;47;;35,51;33,7;0;2;0;0;0;1;0;0;24/08/2022;sensor_ID;94207902
+L_S_2;20/05/2021;17:24;cloudy;6;200;;54,54;13,4;0;3;1;1;1;1;1;1;24/08/2022;sensor_ID;94207903
+slope_H_2;26/05/2021;10:57;Heavy rain/cloudy;6;360;;80,41;10;0;3;0;1;1;1;1;0;22/08/2022;sensor_ID;94207904
+L_N_4;26/05/2021;12:50;Heavy rain/cloudy;7;41;;37,21;45;1;2;0;0;0;1;1;0;22/08/2022;sensor_ID;94207905
+H_S_4;26/05/2021;15:10;Cloudy;7;215;;77,42;8,8;0;;0;0;0;0;1;0;22/08/2022;sensor_ID;94207906
+slope_H_1;26/05/2021;16:41;Cloudy;5;273;;75,4;15,1;0;1;0;0;0;0;0;0;16/06/2022;sensor_ID;94207907
+cad_L_2;27/05/2021;09:34;Cloudy;5;384;;76,65;38,35;0;1;2;1;0;1;1;0;06/07/2022;sensor_ID;94207908
+L_N_2;27/05/2021;10:53;Cloudy/sunny;5;377;;30,91;19,33;0;2;NA;NA;NA;NA;NA;0;NA;sensor_ID;94207909
+slope_L_2;27/05/2021;12:24;sunny/cloudy;9;365;;69,44;13,53;0;1;0;1;0;NA;1;0;06/07/2022;sensor_ID;94207910
+H_N_1;27/05/2021;14:24;Cloudy;5;398;;87,12;17,92;0;2;0;1;0;NA;1;0;06/07/2022;sensor_ID;94207911
+cad_L_1;27/05/2021;15:42;Cloudy;6;195;;80,29;3,35;0;3;0;1;0;NA;0;0;24/08/2022;sensor_ID;94207912
+H_S_1;27/05/2021;17:10;Cloudy/sunny;5;200;;90,31;10,45;0;1;1;1;NA;1;1;1;16/06/2022;sensor_ID;94207913
+L_S_3;27/05/2021;19:04;sunny/cloudy;6;167;;24,47;26,22;0;1;0;1;0;1;1;0;16/06/2022;sensor_ID;94207914
+H_N_2;28/05/2021;10:15;Sunny;6;381;;91,23;8,25;0;2;0;1;0;0;1;0;23/08/2022;sensor_ID;94207915
+cad_H_2;28/05/2021;11:47;Sunny;7;6;;88,09;1,01;0;3;0;1;0;0;1;0;24/08/2022;sensor_ID;94207916
+H_S_3;28/05/2021;13:11;Sunny;10;195;;84,41;9,3;0;2;0;0;0;1;1;0;24/08/2022;sensor_ID;94207917
+L_N_7;28/05/2021;15:28;Sunny;10;360;;70,5;0;0;entre 1 et 2;0;0;0;NA;0;0;23/08/2022;sensor_ID;94207918
+L_S_6;28/05/2021;16:27;Sunny;10;194;;32,23;2,1;0;entre 1 et 2;0;1;0;NA;0;0;23/08/2022;sensor_ID;94207919
+H_S_7;28/05/2021;17:33;Sunny;10;216;;73,89;0,1;0;entre 1 et 2;0;1;0;1;0;0;23/08/2022;sensor_ID;94207920
+slope_L_4;30/06/2021;11:28;Rainy;9;373;;88,99;1,58;0;1;NA;NA;NA;NA;NA;0;NA;sensor_ID;94207921
+H_S_5;30/06/2021;12:23;Rainy;7;188;;88,43;0,81;0;1;1;0;NA;1;1;0;16/06/2022;sensor_ID;94207922
+H_N_4;30/06/2021;14:00;Rainy;7;3;;85,72;24,75;0;01-févr;0;0;0;0;1;0;17/08/2022;sensor_ID;94207923
+slope_H_5;30/06/2021;15:11;Rainy;7;174;;88,63;12,37;0;01-févr;0;1;0;NA;1;0;17/08/2022;sensor_ID;94207924
+cad_H_3;30/06/2021;16:50;Rainy;5;150;;88,29;0,88;0;1;0;0;0;NA;0;0;16/06/2022;sensor_ID;94207925
+H_N_3;30/06/2021;18:00;Rainy;7;396;;89,33;1,93;0;01-févr;1;1;1;NA;1;1;24/08/2022;sensor_ID;94207926
+H_S_2;01/07/2021;10:46;Cloudy;7;189;;87,27;0,36;0;1;0;1;0;NA;1;0;06/07/2022;sensor_ID;94207927
+cad_H_1;01/07/2021;12:06;sunny/cloudy;5;204;;71,1;19,38;0;01-févr;0;1;0;1;1;0;24/08/2022;sensor_ID;94207928
+L_S_4;01/07/2021;13:15;sunny/cloudy;7;245;;42,32;17,56;0;1;2;1;0;1;1;0;06/07/2022;sensor_ID;94207929
+cad_H_5;01/07/2021;14:48;sunny/cloudy;5;95;;87,25;3,57;0;01-févr;0;1;0;1;1;0;24/08/2022;sensor_ID;94207930
+cad_L_7;01/07/2021;15:47;sunny/cloudy;10;190;;83,86;3,93;0;1;0;1;0;NA;1;0;06/07/2022;sensor_ID;94207931
+cad_L_8;01/07/2021;17:17;sunny/cloudy;10;245;;85,58;19,94;0;1;1;0;1;1;1;0;NA;sensor_ID;94207932
+slope_H_8;01/07/2021;18:21;sunny/cloudy;10;225;;59;17,01;0;01-févr;1;1;1;1;1;1;23/08/2022;sensor_ID;94207933
+slope_H_4;02/07/2021;10:32;Sunny;5;275;;88,76;2,96;0;3;0;0;0;0;1;0;23/08/2022;sensor_ID;94207934
+L_S_5;02/07/2021;11:20;Sunny;7;260;;47,26;2,43;0;3;1;1;1;1;1;1;23/08/2022;sensor_ID;94207935
+cad_H_4;02/07/2021;13:08;Sunny;5;307;;86,65;3,38;0;2;0;1;0;0;0;0;23/08/2022;sensor_ID;94207936
+cad_L_6;02/07/2021;14:45;sunny/cloudy;10;290;;64,15;2,73;0;1;2;1;0;1;1;0;23/08/2022;sensor_ID;94207937
+L_S_8;02/07/2021;15:51;cloudy;10;220;;65,74;0,71;0;1;1;1;1;0;1;1;06/07/2022;sensor_ID;94207938
+cad_H_6;02/07/2021;16:45;cloudy;7;295;;78,67;0,37;0;02-mars;0;1;0;0;0;0;23/08/2022;sensor_ID;94207939
+L_S_7;02/07/2021;17:38;cloudy;10;220;;70,87;60,23;0;1;0;0;0;NA;1;0;NA;sensor_ID;94207940
+L_N_8;07/07/2021;;sunny/cloudy;10;;;;42,74;0;3;0;1;1;1;1;0;13/10/2022;sensor_ID;94207941
+slope_L_3;07/07/2021;;sunny/cloudy;5;;;;85,17;0;01-févr;0;1;0;NA;1;0;22/08/2022;sensor_ID;94207942
+L_N_6;07/07/2021;;sunny/cloudy;5;;;;50,88;0;3;0;1;0;1;0;0;13/10/2022;sensor_ID;94207943
+slope_H_7;07/07/2021;;sunny/cloudy;10;;;;74,74;0;3;0;1;1;1;0;0;13/10/2022;sensor_ID;94207944
+H_N_8;07/07/2021;;sunny/cloudy;7;;;;87,44;0;3;0;1;0;1;0;0;13/10/2022;sensor_ID;94207945
+cad_L_3;07/07/2021;;sunny/cloudy;10;;;;89,44;0;01-févr;1;0;NA;NA;0;0;22/08/2022;sensor_ID;94207946
+H_N_5;08/07/2021;11:47;cloudy;6;367;;84,13;3,41;0;1;1;1;NA;1;1;1;06/07/2022;sensor_ID;94207947
+H_N_7;08/07/2021;14:08;cloudy;10;26;;89,65;2,35;0;3;0;1;0;NA;0;0;NA;sensor_ID;94207948
+slope_L_6;08/07/2021;15:54;cloudy;9;40;;87,75;14,49;0;3;1;0;1;NA;1;0;17/08/2022;sensor_ID;94207949
+H_N_6;08/07/2021;16:35;cloudy;7;19;;91,81;0,32;0;3;0;1;0;NA;0;0;17/08/2022;sensor_ID;94207950
+H_S_6;08/07/2021;18:18;cloudy;10;230;;88,19;2,17;0;1;1;1;1;NA;1;1;17/08/2022;sensor_ID;94207951
+H_N_8_2;08/07/2021;20:08;cloudy;11;40;;93,88;1,6;0;1;1;1;1;NA;1;1;17/08/2022;sensor_ID;94207952
+cad_L_5;09/07/2021;11:00;Cloudy/sunny;10;85;;88,13;0,38;0;2;0;1;0;1;1;0;22/08/2022;sensor_ID;94207953
+L_N_5;09/07/2021;11:45;Cloudy/sunny;5;381;;20,63;10,08;0;2;NA;NA;NA;NA;NA;0;NA;sensor_ID;94207954
+slope_L_5;09/07/2021;12:47;Cloudy/sunny;11;180;;74,84;3,16;0;2;1;1;1;1;1;1;22/08/2022;sensor_ID;94207955
+cad_L_4;09/07/2021;15:30;Cloudy/sunny;6;270;;92,27;2,56;0;3;1;1;1;1;1;1;24/08/2022;sensor_ID;94207956
+L_N_3;09/07/2021;16:47;sunny/cloudy;7;390;;35,6;37,91;0;4;0;0;0;NA;1;0;24/08/2022;sensor_ID;94207957
+H_S_1_2;09/07/2021;18:31;sunny/cloudy;5;220;;69,72;4,58;0;1;1;1;1;NA;1;1;16/06/2022;sensor_ID;94207958
+H_N_7;08/07/2021;14:08;cloudy;10;26;;89,65;2,35;0;3;0;1;0;NA;0;0;NA;sensor_ID_2;94207960
