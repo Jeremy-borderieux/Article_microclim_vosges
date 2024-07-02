@@ -1,5 +1,7 @@
 ## Topoclimate buffers floristic diversity from macroclimate in temperate mountain forests.
 
+[![DOI](https://zenodo.org/badge/652591507.svg)](https://zenodo.org/doi/10.5281/zenodo.12626860)
+
 ### Abstract:
 
 Microclimates strongly influence the composition and diversity of forest plant communities. Recent studies have highlighted the role of tree canopies in shaping understory thermal conditions at small spatial scales, especially in lowland forests. In mountain forests, however, the influence of topography in environmental conditions (e.g. topoclimate) is ought to also influence plants’ perceived temperature. Understanding how topography and canopies interactively affect understory temperature is key to identifying stable refugia that could shelter cold-adapted forest specialist species under climate change.
