@@ -154,8 +154,48 @@ lm_agg_max<-lm(T3_max~mnt_25_vosges+Heat_load_index_25+ipv_25+tree_density_2018 
 lm_agg_min<-lm(T3_min~mnt_25_vosges+Heat_load_index_25+ipv_25+tree_density_2018 , data=all_tms_data_agg_fit)
 
 
-get_coef_mean<-summary(lm_agg_mean)$coefficients
-get_coef_max<-summary(lm_agg_max)$coefficients
+##cor between max and mean temperature 
+all_tms_data_agg_fit[,cor(T3_max,T3_mean,method = "pearson")]
+all_tms_data_agg_fit[,plot(T3_max,T3_mean)]
+## finale sampling scheme
+table(str_remove(all_tms_data_agg_fit$locality_id,"_[:digit:]"))
+
+## Small test of elevation/topography/canopy spatial autocorrelation
+library(foreach)
+library(terra)
+stack_all_variable_vallee <- rast(stack_all_variable_vallee)
+
+pred_topo <- stack_all_variable_vallee$Heat_load_index_25 * get_coef_mean["Heat_load_index_25",1] + stack_all_variable_vallee$ipv_25 * get_coef_mean["ipv_25",1]
+names(pred_topo) <- "pred_topo"
+stack_all_variable_vallee <- c(stack_all_variable_vallee,pred_topo) 
+
+autocor_raster <- foreach( window = c(seq(from = 3 , to = 31, by=2),41,51),.combine = rbind)%do%{
+  f <- matrix(1, nrow=window,ncol=window)
+  cat(paste0(window," / "))
+  a1 <- autocor(stack_all_variable_vallee$pred_topo,f, method="moran")
+  a2 <- autocor(stack_all_variable_vallee$tree_density_projected,f, method="moran")
+  a3 <- autocor(stack_all_variable_vallee$mnt_25_vosges,f, method="moran")
+  
+  return(data.table(window=window, moran_pred_topo = a1,moran_canopy =a2 , moran_lapse = a3))
+  
+}
+autocor_raster[,window_meter := window * 25]
+autocor_plot <- ggplot(autocor_raster[window< 52,])+
+  theme_classic()+
+  geom_point(mapping=aes(x = window_meter, y=moran_pred_topo , color= "Topographic effect"),size = 2.5)+
+  geom_point(mapping=aes(x = window_meter, y=moran_canopy , color= "Canopy cooling"),size = 2.5)+
+  geom_point(mapping=aes(x = window_meter, y=moran_lapse , color= "Lapse rate"),size = 2.5)+
+  
+  geom_line(mapping=aes(x = window_meter, y=moran_pred_topo , color= "Topographic effect"),alpha = 0.5)+
+  geom_line(mapping=aes(x = window_meter, y=moran_canopy , color= "Canopy cooling"),alpha = 0.5)+
+  geom_line(mapping=aes(x = window_meter, y=moran_lapse , color= "Lapse rate"),alpha = 0.5)+
+
+  geom_hline(yintercept = 1,col="grey",lty=2)+
+  theme(legend.position = c(0.2,0.75))+
+  labs(x="Focal distance (m)",y="Global Moran I",color="Predictions")+
+  scale_color_manual(values=c("#4EB8C2", "#5BBA58", "#6B6B6B")[c(2,3,1)])
+
+ggsave(file.path("figure_result","global_moranI.png"),autocor_plot,width = 180,height = 130,unit="mm",dpi=300)
 
 ## a function to format the model estimates for publication
 create_table_model<-function(model,dovarpart=T,interaction=F,canopy_variable="tree_density_2018"){
@@ -173,9 +213,14 @@ all_tms_data_agg_fit<-model$model
 range_predictor<-c(NA,apply(all_tms_data_agg_fit[,c("mnt_25_vosges","Heat_load_index_25","ipv_25",canopy_variable)],2,function(x)diff(range(x))))
 range_predictor_char<-c(NA,apply(all_tms_data_agg_fit[,c("mnt_25_vosges","Heat_load_index_25","ipv_25",canopy_variable)],2,get_range))
 
+sd_predictor <- c(NA,apply(all_tms_data_agg_fit[,c("mnt_25_vosges","Heat_load_index_25","ipv_25",canopy_variable)],2,sd))
+
 export_table_model<-data.table(get_coef,keep.rownames=T)
 export_table_model[,range:=if (interaction) c(range_predictor,NA) else range_predictor]
-export_table_model[,effect_size:=range*Estimate]
+export_table_model[,sd:=if (interaction) c(sd_predictor,NA) else sd_predictor]
+
+export_table_model[,effect_size:=sd*Estimate]
+export_table_model[,sd:=NULL]
 
 
 
@@ -213,20 +258,40 @@ export_table_model_max<-create_table_model(lm_agg_max)
 export_table_model_cano_1<-create_table_model(lm_agg_mean_canopy_25m,F,F,"canopy_cover_25m")
 export_table_model_cano_2<-create_table_model(lm_agg_mean_canopy_glama,F,T,"canopy_cover_glama")
 
-write.table(export_table_model,file.path("figure_result","Model_Tmean.csv"),row.names = F,sep=";",dec=",")
+write.table(export_table_model,file.path("figure_result","Model_Tmean.csv"),row.names = F,sep=";",dec=".")
 write.table(export_table_model_max,file.path("figure_result","Model_Tmax.csv"),row.names = F,sep=";",dec=",")
 
 write.table(export_table_model_cano_1,file.path("figure_result","Model_canopy_25m.csv"),row.names = F,sep=";",dec=",")
 write.table(export_table_model_cano_2,file.path("figure_result","Model_canopy_glama.csv"),row.names = F,sep=";",dec=",")
 
+## Please provide plots to better justify the expected linearity between temperature and topography or canopy closure.
+## visualization of the linearity of the temperature predictors 
+
+all_tms_data_agg_fit_melt <- all_tms_data_agg_fit[,c("mnt_25_vosges","Heat_load_index_25","ipv_25","tree_density_2018","T3_mean","T3_max")]
+colnames(all_tms_data_agg_fit_melt)[1:4] <- c("Elevation (m.a.s.l)","Heat load index","Topographic position","Tree density (%)")
+all_tms_data_agg_fit_melt <- melt(all_tms_data_agg_fit_melt,measure.vars = c("Elevation (m.a.s.l)","Heat load index","Topographic position","Tree density (%)"))
+
+plot_linear_pred_mean <- ggplot(all_tms_data_agg_fit_melt,aes(x=value,y=T3_mean))+
+  theme_bw()+
+  geom_point()+
+  geom_smooth(method = "lm",color='orange',fill="orange")+
+  geom_smooth()+
+  facet_wrap(~variable,scales ="free_x")+
+  labs(y="Mean understory temperature °C",x="Predictor")
+
+plot_linear_pred_max<- ggplot(all_tms_data_agg_fit_melt,aes(x=value,y=T3_max))+
+  theme_bw()+
+  geom_point()+
+  geom_smooth(method = "lm",color='orange',fill="orange")+
+  geom_smooth()+
+  facet_wrap(~variable,scales ="free_x")+
+  labs(y="Max understory temperature °C",x="Predictor")
 ## visual check of the residuals
-all_tms_data_agg_fit[,resid_T3_mean:=residuals(lm_agg_mean)]
 
-ggplot(all_tms_data_agg_fit,aes(x=resid_T3_mean))+theme_classic()+geom_histogram(fill="grey80",color="grey40",boundary=0,binwidth =0.125)
-ggplot(all_tms_data_agg_fit,aes(x=xl93,y=resid_T3_mean))+theme_classic()+geom_point()+geom_smooth()
-ggplot(all_tms_data_agg_fit,aes(x=yl93,y=resid_T3_mean))+theme_classic()+geom_point()+geom_smooth()
+ggsave(file.path("Figure_result","linear_predictor_mean_temp.jpg"),
+       ggarrange(plot_linear_pred_mean,plot_linear_pred_max,labels = c("a)","b)"),align="hv",nrow=2,common.legend = T),
+       dpi=250,width = 180,height=210,unit="mm")
 
-#plot(lm_agg_mean)
 
 #### vegetation data reading ####
 vege_plot_meta_data<-fread(file.path("data","flora_data_metadata","plot_data_2022_final.csv"))
@@ -354,9 +419,18 @@ vege_plot_meta_data[,pred_ipv:=  get_coef_mean["ipv_25",1]*ipv_25 ]
 vege_plot_meta_data[,pred_canopy:=  get_coef_mean["tree_density_2018",1]*tree_density_2018 ]
 vege_plot_meta_data[,pred_topo:=pred_heat_load + pred_ipv ]
 
+vege_plot_meta_data[,pred_heat_load_max:=  get_coef_max["Heat_load_index_25",1]*Heat_load_index_25 ]
+vege_plot_meta_data[,pred_ipv_max:=  get_coef_max["ipv_25",1]*ipv_25 ]
+vege_plot_meta_data[,pred_canopy_max:=  get_coef_max["tree_density_2018",1]*tree_density_2018 ]
+vege_plot_meta_data[,pred_topo_max:=pred_heat_load_max + pred_ipv_max ]
+
 ## pred_topo is relative to the maximum temperature created by topogrpahy: exposed ridges (ipv25 = 1, heatload = 1)
-maximum_pred_topo =   get_coef_mean["Heat_load_index_25",1] + get_coef_mean["ipv_25",1]
-vege_plot_meta_data[,pred_topo:=pred_topo -maximum_pred_topo ]
+#maximum_pred_topo =   get_coef_mean["Heat_load_index_25",1]* mean(vege_plot_meta_data$ipv_25) + get_coef_mean["ipv_25",1]*mean(vege_plot_meta_data$Heat_load_index_25)
+mean_pred_topo =   get_coef_mean["Heat_load_index_25",1]* 0.66 + get_coef_mean["ipv_25",1]* 0.5
+
+summary(vege_plot_meta_data)
+
+vege_plot_meta_data[,pred_topo:=pred_topo -mean_pred_topo ]
 
 ## we remove the few plots with positive prediction of microclimate, they were plots that fall into an open canopy
 ## and are unreliable in light of what the microclimate model was trained with
@@ -365,6 +439,7 @@ vege_plot_meta_data<-vege_plot_meta_data[pred_micro<0,]
 table_sp_vosges<-table_sp_vosges[vege_plot_meta_data$plot_ID,]
 
 ## these model are fitted with only bioindicatded soil pH, so that the effect of acidity can be latter removed
+## these corrected values are not used anymore as suggested by the reviewers
 model_out_ph<-lm(RS~ mean_pH,data=vege_plot_meta_data)
 summary(model_out_ph)
 vege_plot_meta_data$RS_pH_corrected<-residuals(model_out_ph)-16.0019 +  6.7577* 5.163606
@@ -384,7 +459,7 @@ levels(vege_plot_meta_data$cut_canopy)<-c("[-2.70 : -2.50 °]\nCold microclimate
 
 
 unique(vege_plot_meta_data$cut_topo)
-levels(vege_plot_meta_data$cut_topo)<-c("[-1.55 : -1.0°]\nCold topoclimate","[-1.0 : -0.65 °]\nModerate topoclimate","[-0.65 : -0.15 °]\nWarm topoclimate")
+levels(vege_plot_meta_data$cut_topo)<-c("[-0.70 : -0.15°]\nCold topoclimate","[-0.15: 0.20°]\nModerate topoclimate","[0.20 : 0.70 °]\nWarm topoclimate")
 
 ### Vegetation analysis ####
 # small ordination for supplementary
@@ -399,52 +474,74 @@ vege_plot_meta_data_ordi<-cbind(vege_plot_meta_data[!plot_ID %in% influencial_pl
 
 plot_ordination<-ggplot(vege_plot_meta_data_ordi,aes(x=Axis1,y=Axis2,color=cut_topo,fill=cut_topo))+
   theme_bw()+
-  theme(legend.spacing.y = unit(0.2, 'cm'))+
   guides(fill = guide_legend(byrow = TRUE))+
+  theme(legend.spacing =   unit(5, 'cm'))+
   geom_point(alpha=0.75,pch=21,color="grey20")+
   stat_ellipse(type="t",geom = "polygon",alpha=0.15,segments =100)+
   scale_fill_manual(values=c("#482173FF","#22A884FF","#FDE725FF"))+
   scale_color_manual(values=c("#482173FF","#22A884FF","#FDE725FF"))+
   labs(fill="Topoclimate \ncategories",color="Topoclimate \ncategories")
 
-
 ggsave(file.path("Figure_result","plot_ordination.jpg"),plot_ordination,dpi=175,width = 180,height=110,unit="mm")
 
 rm(table_sp_vosges_tmp)
+
+#### vegetation model fitting ####
+
 ## table to export the results of linear model prediction specific richness (RS) or community thermla index (CTI)
-create_table_model_flora<-function(model,do_varpart=F){
+create_table_model_flora<-function(model,do_varpart=F,ismax=F){
   
   get_coef<-summary(model)$coefficients
+  colnames(get_coef)[3] <- "testval"
+  colnames(get_coef)[4] <- "pval"
   
   get_range<-function(x){
     paste0(round(range(x),3),collapse=" : ")
     
   }  
   
-  range_predictor<-c(NA,apply(vege_plot_meta_data[,c("pred_elev" , "pred_topo"   ,  "pred_canopy")],2,function(x)diff(range(x))))
-  range_predictor_char<-c(NA,apply(vege_plot_meta_data[,c("pred_elev" , "pred_topo"  ,  "pred_canopy")],2,get_range))
+  names_predictor <- c("pred_elev","pred_topo","pred_canopy","mean_pH")
+  if(ismax) names_predictor <- c("pred_elev_max","pred_topo_max","pred_canopy_max","mean_pH")
+  
+  range_predictor<-c(NA,apply(vege_plot_meta_data[,..names_predictor],2,function(x)diff(range(x))))
+  range_predictor_char<-c(NA,apply(vege_plot_meta_data[,..names_predictor],2,get_range))
+  
+  mean_predictor <- apply(vege_plot_meta_data[,..names_predictor],2,mean)
+  min_pred <- as.matrix(rbind(mean_predictor,mean_predictor,mean_predictor,mean_predictor))
+  max_pred <- as.matrix(rbind(mean_predictor,mean_predictor,mean_predictor,mean_predictor))
+  
+  min_sd <- function(x) mean(x)
+  max_sd <- function(x) mean(x) + sd(x)
+  
+  diag(min_pred) <- apply(vege_plot_meta_data[,..names_predictor],2,min_sd)
+  diag(max_pred) <- apply(vege_plot_meta_data[,..names_predictor],2,max_sd)
+  
+  min_range <- predict(model,data.table(min_pred),type="response")
+  max_range <- predict(model,data.table(max_pred),type="response")
+  max_range - min_range
+  
   
   export_table_model<-data.table(get_coef,keep.rownames=T)
   export_table_model[,range:=range_predictor]
-  export_table_model[,effect_size:=range*Estimate]
+  export_table_model[,effect_size:=c(NA,max_range - min_range)]
   
-  ## variance partitionning
-  if(do_varpart){
-    grp<-data.frame(var=c("pred_elev","pred_topo","pred_canopy"),group=c("Elevation","Topo","Canopy"))
-    
-    coef_varpart<-as.vector(t(varPart(model=glm(model),groups = grp)))
-    names(coef_varpart)<-colnames(t(varPart(model=glm(model),groups = grp)))
-    
-    var_elev<-coef_varpart["Elevation"] + coef_varpart["Elevation_Topo"]/2 + coef_varpart["Elevation_Canopy"]/2  +   coef_varpart["Elevation_Topo_Canopy"]/3
-    var_topo<- coef_varpart["Topo"] + coef_varpart["Elevation_Topo"]/2 + coef_varpart["Topo_Canopy"]/2  +   coef_varpart["Elevation_Topo_Canopy"]/3
-    var_canopy<- coef_varpart["Canopy"] + coef_varpart["Topo_Canopy"]/2 + coef_varpart["Elevation_Canopy"]/2  +   coef_varpart["Elevation_Topo_Canopy"]/3
-    
-    export_table_model[,variance:= c(NA,var_elev,var_topo,var_canopy)*100]
-  }
-  
-  export_table_model<-export_table_model[,-c("t value")]
+  # ## variance partitionning
+  # if(do_varpart){
+  #   grp<-data.frame(var=c("pred_elev","pred_topo","pred_canopy","mean_pH"),group=c("Elevation","Topo","Canopy","Canopy"))
+  #   
+  #   coef_varpart<-as.vector(t(varPart(model=glm(model),groups = grp)))
+  #   names(coef_varpart)<-colnames(t(varPart(model=glm(model),groups = grp)))
+  #   
+  #   var_elev<-coef_varpart["Elevation"] + coef_varpart["Elevation_Topo"]/2 + coef_varpart["Elevation_Canopy"]/2  +   coef_varpart["Elevation_Topo_Canopy"]/3
+  #   var_topo<- coef_varpart["Topo"] + coef_varpart["Elevation_Topo"]/2 + coef_varpart["Topo_Canopy"]/2  +   coef_varpart["Elevation_Topo_Canopy"]/3
+  #   var_canopy<- coef_varpart["Canopy"] + coef_varpart["Topo_Canopy"]/2 + coef_varpart["Elevation_Canopy"]/2  +   coef_varpart["Elevation_Topo_Canopy"]/3
+  #   
+  #   export_table_model[,variance:= c(NA,var_elev,var_topo,var_canopy,var_canopy)*100]
+  # }
+  # 
+  export_table_model<-export_table_model[,-c("testval")]
   export_table_model<-cbind(export_table_model[,"rn"],signif(export_table_model[,-"rn"],3))
-  export_table_model[,`Pr(>|t|)`:=ifelse(`Pr(>|t|)`<10e-4,"<10-4",`Pr(>|t|)`)]
+  export_table_model[,pval:=ifelse(pval<10e-4,"<10-4",pval)]
   export_table_model[,range:=range_predictor_char]
   
   if(!do_varpart) export_table_model<-export_table_model[,c(1,2,3,5,6,4)] else export_table_model<-export_table_model[,c(1,2,3,5,6,4,7)]
@@ -456,18 +553,79 @@ create_table_model_flora<-function(model,do_varpart=F){
 }
 
 ## linear regression
-lm_cit<-lm(cit_climplant_pH_corrected~pred_elev+pred_topo+pred_canopy,data=vege_plot_meta_data)
-lm_rs<-lm(RS_pH_corrected~pred_elev+pred_topo+pred_canopy,data=vege_plot_meta_data)
+lm_cit_no_ph_correction<-lm(cit_climplant~pred_elev+pred_topo+pred_canopy+mean_pH,data=vege_plot_meta_data)
+lm_cit_no_ph_correction_max<-lm(cit_climplant~pred_elev_max+pred_topo_max+pred_canopy_max+mean_pH,
+                            data=vege_plot_meta_data)
 
-summary(lm_cit)
-summary(lm_rs)
+summary(lm_cit_no_ph_correction)
+library(MASS)
+glm_rs_no_ph_correction<-glm.nb(RS~pred_elev+pred_topo+pred_canopy+mean_pH,data=vege_plot_meta_data)
+glm_rs_no_ph_correction_max<-glm.nb(RS~pred_elev_max+pred_topo_max+pred_canopy_max+mean_pH,
+                                data=vege_plot_meta_data)
 
-table_cit<-create_table_model_flora(lm_cit,T)
-table_rs<-create_table_model_flora(lm_rs,T)
+summary(lm_cit_no_ph_correction)
+summary(glm_rs_no_ph_correction)
 
-export_flora_model<-rbind(table_rs,table_cit)
+vege_plot_meta_data[,cor(pred_elev,mean_pH)]
 
-write.table(export_flora_model,file.path("figure_result","Model_flora.csv"),row.names = F,sep=";",dec=",")
+car::vif(lm_cit_no_ph_correction)
+car::vif(glm_rs_no_ph_correction)
+
+library(DHARMa)
+
+testResiduals(lm_cit_no_ph_correction)
+testResiduals(glm_rs_no_ph_correction)
+testResiduals(lm_agg_mean)
+
+all_tms_data_agg_fit[,resid_T3_mean:=residuals(lm_agg_mean)]
+ggplot(all_tms_data_agg_fit,aes(x=resid_T3_mean))+theme_classic()+geom_histogram(fill="grey80",color="grey40",boundary=0,binwidth =0.125)
+ggplot(all_tms_data_agg_fit,aes(x=xl93,y=resid_T3_mean))+theme_classic()+geom_point()+geom_smooth()
+ggplot(all_tms_data_agg_fit,aes(x=yl93,y=resid_T3_mean))+theme_classic()+geom_point()+geom_smooth()
+ggplot(all_tms_data_agg_fit,aes(x=Heat_load_index_25,y=resid_T3_mean))+theme_classic()+geom_point()+geom_smooth()
+
+
+create_plot_res <- function(model){
+  p_a <- ggplot(mappin = aes(x = fitted(model), y= residuals(model)))+
+    geom_point(size=1)+
+    geom_smooth(method="lm")+
+    theme_bw()+
+    labs(x="Fitted values",y="Residuals")
+  
+  p_b <- ggplot(mappin = aes(x = residuals(model)))+
+    theme_bw()+
+    geom_histogram(fill="#8ABFFC",color="grey10",bins =16,origin = 0)+
+    labs(x="Residuals")
+ 
+  return( ggarrange(p_a,p_b,nrow = 1,widths = c(1,0.7)))
+  
+}
+
+to_export_residuals <- ggarrange(create_plot_res(lm_agg_mean),
+          create_plot_res(lm_cit_no_ph_correction),
+          create_plot_res(glm_rs_no_ph_correction),
+          nrow=3,
+          labels= c("a)","b)","c)"))
+
+ggsave(file.path("figure_result","residuals_of_models.png"),to_export_residuals,width = 180,height = 130,units = "mm")
+
+## T mean predicting flora
+table_cit<-create_table_model_flora(lm_cit_no_ph_correction,F,ismax = F)
+table_rs<-create_table_model_flora(glm_rs_no_ph_correction,F)
+table_rs[,r_squared:=NA]
+
+export_flora_model<-rbind(table_rs,table_cit,fill=T)
+
+write.table(export_flora_model,file.path("figure_result","Model_flora.csv"),row.names = F,sep=";",dec=".")
+
+## T max predicting flora
+table_cit<-create_table_model_flora(lm_cit_no_ph_correction_max,F,T)
+table_rs<-create_table_model_flora(glm_rs_no_ph_correction_max,F,T)
+table_rs[,r_squared:=NA]
+export_flora_model_max<-rbind(table_rs,table_cit,fill=T)
+
+write.table(export_flora_model_max,file.path("figure_result","Model_flora_max.csv"),row.names = F,sep=";",dec=".")
+
+
 #### descritpives statistics ####
 
 ## microclimate prediction
@@ -553,7 +711,6 @@ nrow(table_sp_vosges_cut[unique_to_cold==1,])
 nrow(table_sp_vosges_cut[unique_to_moder==1,])
 nrow(table_sp_vosges_cut[unique_to_warm==1,])
 
-
 #### Figures ####
 
 ### boxplots of CTI and specific richness per classes
@@ -563,26 +720,27 @@ my_comparisons <- list( levels(vege_plot_meta_data$cut_topo)[1:2],
                         levels(vege_plot_meta_data$cut_topo)[2:3], 
                         levels(vege_plot_meta_data$cut_topo)[c(1,3)] )
 
-RS_plot<-ggplot(vege_plot_meta_data[,],aes(x=cut_topo,y=RS_pH_corrected,fill=cut_topo))+
+
+RS_plot<-ggplot(vege_plot_meta_data[,],aes(x=cut_topo,y=RS,fill=cut_topo))+
   theme_bw()+
   geom_jitter(alpha=0.35,pch=21,color="grey20",size=1.5,show.legend = F)+
   geom_boxplot(alpha=0.5, outlier.alpha = 0,show.legend = F)+
   #geom_violin(alpha=0.5,show.legend = F,draw_quantiles = 0.5)+
   scale_fill_manual(values=c("#482173FF","#22A884FF","#FDE725FF"))+ 
   coord_cartesian(ylim=c(-2,68))+
-  labs(y="Specific richness\ncorrected for pH",x="Topoclimate class")+
+  labs(y="Species richness",x="Topoclimate class")+
   stat_compare_means(comparisons = my_comparisons, label.y = c(55,58,61),
                      symnum.args=list(cutpoints = c(0, 0.001, 0.01, 0.05, Inf), symbols = c( "***", "**", "*", "ns")))
 
 
-CTI_plot<-ggplot(vege_plot_meta_data[,],aes(x=cut_topo,y=cit_climplant_pH_corrected,fill=cut_topo))+
+CTI_plot<-ggplot(vege_plot_meta_data[,],aes(x=cut_topo,y=cit_climplant,fill=cut_topo))+
   theme_bw()+
   geom_jitter(alpha=0.35,pch=21,color="grey20",size=1.5,show.legend = F)+
-  scale_y_continuous(limits=c(6.49,9.65))+
+  scale_y_continuous(limits=c(5.75,9.65))+
   geom_boxplot(alpha=0.5, outlier.alpha = 0,show.legend = F,draw_quantiles = 0.5)+
   #geom_violin(alpha=0.5, outlier.alpha = 0,show.legend = F,draw_quantiles = 0.5)+
   scale_fill_manual(values=c("#482173FF","#22A884FF","#FDE725FF"))+ 
-  labs(y="Community thermal index (°C)\ncorrected for pH",x="Topoclimate class")+
+  labs(y="Community thermal index (°C)",x="Topoclimate class")+
   stat_compare_means(comparisons = my_comparisons ,label.y = c(9,9.25,9.45),
                      symnum.args=list(cutpoints = c(0, 0.001, 0.01, 0.05, Inf), symbols = c( "***", "**", "*", "ns")))
 
@@ -597,23 +755,23 @@ my_comparisons <- list( levels(vege_plot_meta_data$cut_canopy)[1:2],
                         levels(vege_plot_meta_data$cut_canopy)[2:3], 
                         levels(vege_plot_meta_data$cut_canopy)[c(1,3)] )
 
-RS_plot_canopy<-ggplot(vege_plot_meta_data,aes(x=cut_canopy,y=RS_pH_corrected,fill=cut_canopy))+
+RS_plot_canopy<-ggplot(vege_plot_meta_data,aes(x=cut_canopy,y=RS,fill=cut_canopy))+
   theme_bw()+
   geom_jitter(alpha=0.35,pch=21,color="white",size=1.5,show.legend = F)+
   geom_boxplot(alpha=0.5, outlier.alpha = 0,show.legend = F)+
   scale_fill_manual(values=c("#482173FF","#22A884FF","#FDE725FF"))+ 
   coord_cartesian(ylim=c(-2,68))+
-  labs(y="Specific richness\ncorrected for pH",x="Microclimate categories")+
+  labs(y="Species richness",x="Microclimate categories")+ #\ncorrected for pH
   stat_compare_means(comparisons = my_comparisons, label.y = c(55,58,61),
                      symnum.args=list(cutpoints = c(0, 0.0001, 0.001, 0.01, 0.05, Inf), symbols = c("****", "***", "**", "*", "ns")))
 
 
-CTI_plot_canopy<-ggplot(vege_plot_meta_data[,],aes(x=cut_canopy,y=cit_climplant_pH_corrected,fill=cut_canopy))+
+CTI_plot_canopy<-ggplot(vege_plot_meta_data[,],aes(x=cut_canopy,y=cit_climplant,fill=cut_canopy))+
   theme_bw()+
   geom_jitter(alpha=0.35,pch=21,color="white",size=1.5,show.legend = F)+
   geom_boxplot(alpha=0.5, outlier.alpha = 0,show.legend = F)+
   scale_fill_manual(values=c("#482173FF","#22A884FF","#FDE725FF"))+ 
-  labs(y="Community thermal index (°C)\ncorrected for pH",x="Microclimate categories")+
+  labs(y="Community thermal index (°C)",x="Microclimate categories")+ # \ncorrected for pH
   stat_compare_means(comparisons = my_comparisons ,label.y = c(9.25,9.5,9.75)-0.1,
                      symnum.args=list(cutpoints = c(0, 0.0001, 0.001, 0.01, 0.05, Inf), symbols = c("****", "***", "**", "*", "ns")))
 
@@ -626,22 +784,22 @@ ggsave(plot=Export_boxplot_canopy,file.path("figure_result","Figure_boxplot_supp
 
 ### continuous version( no boxplots)
 
-RS_plot_continuous<-ggplot(vege_plot_meta_data,aes(x=pred_topo-2.465 ,y=RS_pH_corrected,fill=cut_topo))+
+RS_plot_continuous<-ggplot(vege_plot_meta_data,aes(x=pred_topo ,y=RS,fill=cut_topo))+
   theme_bw()+
   geom_point(alpha=0.5,pch=21,color="grey10",size=3,show.legend = T)+
   scale_fill_manual(values=c("#482173FF","#22A884FF","#FDE725FF"))+ 
   geom_smooth(method="lm",fill="grey75",color="grey10")+
   #coord_cartesian(ylim=c(0,72))+
-  labs(y="Specific richness\ncorrected for pH",x="Predicted temperature",fill="Topoclimatic classes")
+  labs(y="Species richness",x="Topoclimate effect",fill="Topoclimatic classes")
 
 
-CTI_plot_continuous<-ggplot(vege_plot_meta_data,aes(x=pred_topo -2.465,y=cit_climplant_pH_corrected,fill=cut_topo))+
+CTI_plot_continuous<-ggplot(vege_plot_meta_data,aes(x=pred_topo ,y=cit_climplant,fill=cut_topo))+
   theme_bw()+
   geom_point(alpha=0.5,pch=21,color="grey10",size=3,show.legend = T)+
   scale_fill_manual(values=c("#482173FF","#22A884FF","#FDE725FF"))+ 
   geom_smooth(method="lm",fill="grey75",color="grey10")+
   #coord_cartesian(ylim=c(0,72))+
-  labs(y="Community thermal index (°C)\ncorrected for pH",x="Predicted temperature",fill="Topoclimatic classes")
+  labs(y="Community thermal index (°C)",x="Topoclimate effect",fill="Topoclimatic classes")
 
 export_continuous<-ggarrange(plotlist=list(RS_plot_continuous,CTI_plot_continuous),nrow=2,labels=c("a)","b)"),common.legend = T,legend = "bottom")
 
@@ -712,7 +870,7 @@ dt_raster[,pred_micro:=  pred_T_mean - pred_elev  ]
 dt_raster[,pred_heat_load:=   get_coef_mean["Heat_load_index_25",1]*Heat_load_index_25 ]
 dt_raster[,pred_ipv:=   get_coef_mean["ipv_25",1]*ipv_25  ]
 dt_raster[,pred_topo:=   pred_heat_load+pred_ipv ]
-dt_raster[,pred_topo:=   pred_topo - maximum_pred_topo]
+dt_raster[,pred_topo:=   pred_topo - mean_pred_topo]
 
 dt_raster[,pred_canopy:=   get_coef_mean["tree_density_2018",1]*tree_density_2018  ]
 
@@ -724,7 +882,7 @@ dt_raster[!is.na(pred_elev),sum(!foret_pub)/length(foret_pub)]
 #### Maps #### 
 ## usefull for later to show where the inset is
 square_inset<-st_buffer(st_as_sf(data.table(x=1000125,y=6764575),coords=c("x","y"),crs=st_crs(2154)),1000,endCapStyle="SQUARE")
-subset_map_dt<-dt_raster[x%between% c(999125-100,999625+1500)& y %between%c(6765075-1500,6766075-500) ,]
+valley_border<-st_read("data",layer="valley_shp")
 
 map_elevation_climate<-ggplot(dt_raster,aes(x,y,fill=pred_elev+ get_coef_mean["tree_density_2018",1]*90))+
   theme_classic(base_size =14)+
@@ -746,20 +904,22 @@ map_pred_topo<-ggplot(dt_raster,aes(x,y,fill=pred_topo ))+
   geom_raster()+
   coord_fixed()+
   scale_fill_viridis_c(na.value ="transparent",oob=scales::squish,
-                       limits=c(-1.5,-0.15),breaks=c(-0.15,-0.5,-1,-1.5))+
+                       limits=c(-0.7,0.7),breaks=c(-0.7,-0.35,-0,0.35,0.7),labels = c("-0.70","-0.35","0","0.35","0.70"))+
   labs(fill="var")+
   geom_sf(data=valley_border,inherit.aes=F,linewidth=0.4,fill=NA,alpha=0,color="white")+
   geom_sf(data=square_inset,fill=NA,inherit.aes=F,color="firebrick3",linewidth= 1)+
   coord_sf(expand=F)+
   annotation_scale()+ 
-  labs(x="",y="",fill="Topoclimatic \ncooling °C")+
+  labs(x="",y="",fill="Topoclimatic \neffect °C")+
   theme(legend.position = c(0.88,0.75),legend.text = element_text(size=11),legend.title = element_text(size=12.5))
 
-## We bound the extreme value for a easier display
+## We bound the extreme value for a easier display 
 dt_raster[,pred_canopy_2:=ifelse(is.na(pred_T_mean),NA,pred_canopy)]
 dt_raster[,pred_canopy_2:=ifelse(pred_canopy_2> -1.5,-1.5,pred_canopy_2)]
+## used for the mini maps below
+subset_map_dt<-dt_raster[x%between% c(999125-100,999625+1500)& y %between%c(6765075-1500,6766075-500) ,]
 
-map_pred_canopy<-ggplot(dt_raster,aes(x,y,fill=pred_canopy_2 ))+
+map_pred_canopy<-ggplot(dt_raster[tree_density_projected  == 0],aes(x,y,fill=pred_canopy_2 ))+
   theme_classic(base_size =14)+
   geom_raster()+
   coord_fixed()+
@@ -770,8 +930,17 @@ map_pred_canopy<-ggplot(dt_raster,aes(x,y,fill=pred_canopy_2 ))+
   geom_sf(data=square_inset,fill=NA,inherit.aes=F,color="firebrick3",linewidth= 1)+
   coord_sf(expand=F)+
   annotation_scale()+ 
-  labs(x="",y="",fill="Microclimatic \ncooling °C")+
+  labs(x="",y="",fill="Canopy closure\neffect °C")+
   theme(legend.position = c(0.88,0.75),legend.text = element_text(size=11),legend.title = element_text(size=12.5))
+
+ggplot(dt_raster[ ],aes( x= mnt_25_vosges, y= tree_density_projected))+
+  geom_point(alpha=0.015)+
+  theme_classic()+
+  geom_point(data = vege_plot_meta_data,aes(fill="Vegetation surveys"),color="black",pch=21,size=1.75)+
+  geom_point(data = coords[site_ID %in% all_tms_data_agg_fit$locality_id,],aes(fill = "Loggers"),color="black",pch=21,size=2.25)+
+  scale_fill_manual(values = c("white","#55C463"))+
+  labs(x = "Elevation (M a.s.l.)",y = "canopy closure",fill="Plots")
+
 
 ## create a zoomed inset of one raster
 create_mini_map<-function(what){
@@ -792,13 +961,15 @@ mini_map_1<-ggplot(subset_map_dt,aes(x,y,fill=get(what) ))+
 
 minimaps<-ggarrange(plotlist = list( create_mini_map("pred_elev"),create_mini_map("pred_topo"),create_mini_map("pred_canopy_2")),ncol=2,nrow=2,align = "hv")
 
-out_4_panel<-ggarrange(plotlist=list(map_elevation_climate,map_pred_topo,map_pred_canopy,minimaps),
-                       ncol=2,nrow=2,labels = c("a)","b)","c)","d)"),align = "hv",
-                       font.label = list(size = 18, color = "grey5", face = "bold", family = NULL))
+out_4_panel<-ggarrange(plotlist=list(map_elevation_climate+ggtitle("    "),
+                                     map_pred_topo,
+                                     map_pred_canopy,minimaps),
+                       ncol=2,nrow=2,labels = c("a) Lapse rate","b) Topograpy ","c) Canopy    ","d)        "),align = "hv",
+                       font.label = list(size = 18, color = "grey5", face = "bold", family = NULL),hjust = 0)
 
 ggsave(file.path("Figure_result","climate_map_2.jpg"),
        out_4_panel,
-       dpi=400,unit="mm",width = 180,height = 160,scale=1.5)
+       dpi=400,unit="mm",width = 180,height = 180,scale=1.5)
 
 
 #### code to create the sampling map ####
