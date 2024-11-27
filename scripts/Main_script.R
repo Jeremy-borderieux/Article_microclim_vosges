@@ -167,35 +167,83 @@ stack_all_variable_vallee <- rast(stack_all_variable_vallee)
 
 pred_topo <- stack_all_variable_vallee$Heat_load_index_25 * get_coef_mean["Heat_load_index_25",1] + stack_all_variable_vallee$ipv_25 * get_coef_mean["ipv_25",1]
 names(pred_topo) <- "pred_topo"
-stack_all_variable_vallee <- c(stack_all_variable_vallee,pred_topo) 
 
-autocor_raster <- foreach( window = c(seq(from = 3 , to = 31, by=2),41,51),.combine = rbind)%do%{
-  f <- matrix(1, nrow=window,ncol=window)
-  cat(paste0(window," / "))
-  a1 <- autocor(stack_all_variable_vallee$pred_topo,f, method="moran")
-  a2 <- autocor(stack_all_variable_vallee$tree_density_projected,f, method="moran")
-  a3 <- autocor(stack_all_variable_vallee$mnt_25_vosges,f, method="moran")
-  
-  return(data.table(window=window, moran_pred_topo = a1,moran_canopy =a2 , moran_lapse = a3))
-  
-}
-autocor_raster[,window_meter := window * 25]
-autocor_plot <- ggplot(autocor_raster[window< 52,])+
-  theme_classic()+
-  geom_point(mapping=aes(x = window_meter, y=moran_pred_topo , color= "Topographic effect"),size = 2.5)+
-  geom_point(mapping=aes(x = window_meter, y=moran_canopy , color= "Canopy cooling"),size = 2.5)+
-  geom_point(mapping=aes(x = window_meter, y=moran_lapse , color= "Lapse rate"),size = 2.5)+
-  
-  geom_line(mapping=aes(x = window_meter, y=moran_pred_topo , color= "Topographic effect"),alpha = 0.5)+
-  geom_line(mapping=aes(x = window_meter, y=moran_canopy , color= "Canopy cooling"),alpha = 0.5)+
-  geom_line(mapping=aes(x = window_meter, y=moran_lapse , color= "Lapse rate"),alpha = 0.5)+
+pred_cano <- stack_all_variable_vallee$tree_density_projected * get_coef_mean["tree_density_2018",1] 
+names(pred_cano) <- "pred_cano"
 
-  geom_hline(yintercept = 1,col="grey",lty=2)+
-  theme(legend.position = c(0.2,0.75))+
-  labs(x="Focal distance (m)",y="Global Moran I",color="Predictions")+
-  scale_color_manual(values=c("#4EB8C2", "#5BBA58", "#6B6B6B")[c(2,3,1)])
+pred_elev <- stack_all_variable_vallee$mnt_25_vosges * get_coef_mean["mnt_25_vosges",1] 
+names(pred_elev) <- "pred_elev"
 
-ggsave(file.path("figure_result","global_moranI.png"),autocor_plot,width = 180,height = 130,unit="mm",dpi=300)
+
+stack_all_variable_vallee <- stack(stack_all_variable_vallee,pred_topo,pred_cano,pred_elev)
+stack_all_variable_vallee$pred_cano <- mask(stack_all_variable_vallee$pred_cano,stack_all_variable_vallee$pred_elev)
+
+
+library(usdm)
+variogram_topo <- Variogram(stack_all_variable_vallee$pred_topo,lag = 125,cutoff = 4160*2)
+variogram_vege <- Variogram(stack_all_variable_vallee$pred_cano,lag = 25,cutoff =2000)
+variogram_vege_2 <- Variogram(stack_all_variable_vallee$pred_cano,lag = 25,cutoff =2000)
+
+variogram_topo_2 <- Variogram(stack_all_variable_vallee$pred_topo,lag = 25,cutoff = 2000)
+
+variogram_elev <- Variogram(stack_all_variable_vallee$pred_elev,lag = 125,cutoff = 4160*2)
+variogram_elev_2 <- Variogram(stack_all_variable_vallee$pred_elev,lag = 25,cutoff =2000)
+
+plot(variogram_topo)
+plot(variogram_topo_2)
+plot(variogram_vege)
+plot(variogram_vege_2)
+
+plot(variogram_elev)
+plot(variogram_elev_2)
+
+variogram_data <- rbind(variogram_vege@variogram,variogram_topo_2@variogram,variogram_elev_2@variogram)
+variogram_data$class <- rep(c("Canopy cooling","Topographic effect","Lapse rate"),each=80)
+
+variogram_data <- data.table(variogram_data)
+variogram_data[,scaled_gamma := scale(gamma), by = class]
+scale(variogram_data$gamma)
+
+semivariogram <- ggplot(variogram_data,aes(x = distance, y = scaled_gamma , color = class))+
+#ggplot(variogram_data,aes(x = distance, y = ifelse(class=="Lapse rate" ,gamma/5 ,gamma) , color = class))+
+    theme_classic()+
+  theme(legend.position = c(0.7,0.25))+
+  geom_point(alpha=0.75,size=1)+
+  geom_path()+
+  scale_color_manual(values=c("#4EB8C2", "#5BBA58", "#6B6B6B")[c(2,3,1)])+
+  labs(y = "Scaled semivariance", x= "Distance (m)", color ="Predictors")
+  
+ggsave(file.path("figure_result","semivariogram.png"),semivariogram,width = 180,height = 110,unit="mm",dpi=300)
+
+# 
+# 
+# autocor_raster <- foreach( window = c(seq(from = 3 , to = 31, by=2),41,51),.combine = rbind)%do%{
+#   f <- matrix(1, nrow=window,ncol=window)
+#   cat(paste0(window," / "))
+#   a1 <- autocor(stack_all_variable_vallee$pred_topo,f, method="moran")
+#   a2 <- autocor(stack_all_variable_vallee$tree_density_projected,f, method="moran")
+#   a3 <- autocor(stack_all_variable_vallee$mnt_25_vosges,f, method="moran")
+#   
+#   return(data.table(window=window, moran_pred_topo = a1,moran_canopy =a2 , moran_lapse = a3))
+#   
+# }
+# autocor_raster[,window_meter := window * 25]
+# autocor_plot <- ggplot(autocor_raster[window< 52,])+
+#   theme_classic()+
+#   geom_point(mapping=aes(x = window_meter, y=moran_pred_topo , color= "Topographic effect"),size = 2.5)+
+#   geom_point(mapping=aes(x = window_meter, y=moran_canopy , color= "Canopy cooling"),size = 2.5)+
+#   geom_point(mapping=aes(x = window_meter, y=moran_lapse , color= "Lapse rate"),size = 2.5)+
+#   
+#   geom_line(mapping=aes(x = window_meter, y=moran_pred_topo , color= "Topographic effect"),alpha = 0.5)+
+#   geom_line(mapping=aes(x = window_meter, y=moran_canopy , color= "Canopy cooling"),alpha = 0.5)+
+#   geom_line(mapping=aes(x = window_meter, y=moran_lapse , color= "Lapse rate"),alpha = 0.5)+
+# 
+#   geom_hline(yintercept = 1,col="grey",lty=2)+
+#   theme(legend.position = c(0.2,0.75))+
+#   labs(x="Focal distance (m)",y="Global Moran I",color="Predictions")+
+#   scale_color_manual(values=c("#4EB8C2", "#5BBA58", "#6B6B6B")[c(2,3,1)])
+# 
+# ggsave(file.path("figure_result","global_moranI.png"),autocor_plot,width = 180,height = 130,unit="mm",dpi=300)
 
 ## a function to format the model estimates for publication
 create_table_model<-function(model,dovarpart=T,interaction=F,canopy_variable="tree_density_2018"){
