@@ -147,6 +147,8 @@ lm_agg_mean_canopy_25m<-lm(T3_mean~mnt_25_vosges+Heat_load_index_25+canopy_cover
 lm_agg_mean_canopy_glama<-lm(T3_mean~mnt_25_vosges+Heat_load_index_25*canopy_cover_glama+ipv_25 , data=all_tms_data_agg_fit,model=T)
 
 summary(lm_agg_mean)
+vif(lm_agg_mean)
+vif(lm_agg_max)
 summary(lm_agg_mean_canopy_25m)
 summary(lm_agg_mean_canopy_glama)
 
@@ -943,7 +945,7 @@ map_elevation_climate<-ggplot(dt_raster,aes(x,y,fill=pred_elev+ get_coef_mean["t
   geom_sf(data=square_inset,fill=NA,inherit.aes=F,color="firebrick3",linewidth= 1)+
   coord_sf(expand=F)+
   annotation_scale()+ 
-  labs(x="",y="",fill="Mean \ntemperature °C")+ 
+  labs(x="",y="",fill="Lapse rate \neffect °C")+ 
   theme(legend.position = c(0.88,0.75),legend.text = element_text(size=11),legend.title = element_text(size=12.5))
 
 
@@ -967,7 +969,7 @@ dt_raster[,pred_canopy_2:=ifelse(pred_canopy_2> -1.5,-1.5,pred_canopy_2)]
 ## used for the mini maps below
 subset_map_dt<-dt_raster[x%between% c(999125-100,999625+1500)& y %between%c(6765075-1500,6766075-500) ,]
 
-map_pred_canopy<-ggplot(dt_raster[tree_density_projected  == 0],aes(x,y,fill=pred_canopy_2 ))+
+map_pred_canopy<-ggplot(dt_raster[],aes(x,y,fill=pred_canopy_2 ))+
   theme_classic(base_size =14)+
   geom_raster()+
   coord_fixed()+
@@ -1009,15 +1011,31 @@ mini_map_1<-ggplot(subset_map_dt,aes(x,y,fill=get(what) ))+
 
 minimaps<-ggarrange(plotlist = list( create_mini_map("pred_elev"),create_mini_map("pred_topo"),create_mini_map("pred_canopy_2")),ncol=2,nrow=2,align = "hv")
 
-out_4_panel<-ggarrange(plotlist=list(map_elevation_climate+ggtitle("    "),
+out_4_panel<-ggarrange(plotlist=list(map_elevation_climate+ggtitle(" "),
                                      map_pred_topo,
-                                     map_pred_canopy,minimaps),
+                                     map_pred_canopy,
+                                     minimaps),
                        ncol=2,nrow=2,labels = c("a) Lapse rate","b) Topograpy ","c) Canopy    ","d)        "),align = "hv",
                        font.label = list(size = 18, color = "grey5", face = "bold", family = NULL),hjust = 0)
 
 ggsave(file.path("Figure_result","climate_map_2.jpg"),
        out_4_panel,
        dpi=400,unit="mm",width = 180,height = 180,scale=1.5)
+
+dt_raster[,tree_density_2018_na_fill := ifelse(is.na(mnt_25_vosges),NA,tree_density_2018)]
+
+dt_raster_melt <- melt(dt_raster[,c("mnt_25_vosges","Heat_load_index_25","ipv_25","tree_density_2018_na_fill")])
+levels(dt_raster_melt$variable) <- c("Elevation (m a.s.l.)","Heat Load Index","Topographic Position Index","Canopy closure (%)")
+
+our_predictor_hist <- ggplot(dt_raster_melt,aes(x = value))+
+  geom_histogram(fill="cadetblue",color="grey20",origin = 0)+
+  theme_bw()+
+  facet_wrap(~variable,scales = "free_x")+
+  labs(y ="Number of cell", x = "Predictor value")
+
+ggsave(file.path("Figure_result","hist_of_predictors.jpg"),
+       our_predictor_hist,
+       dpi=250,unit="mm",width = 180,height = 140,scale=1)
 
 
 #### code to create the sampling map ####
@@ -1122,7 +1140,7 @@ r2<-signif(summary(lm_test)$r.squared,4)
 pval<-summary(lm_test)$coefficients[2,4]
 a<-signif(summary(lm_test)$coefficients[1,1],3)
 b<-signif(summary(lm_test)$coefficients[2,1],3)
-labs_glama<-paste0("Y = ",a," + ",b," * Remote tree density \nR² = ",r2,ifelse(pval<0.05," ***"," .")," ")
+labs_glama<-paste0("Y = ",a," + ",b," * Remote tree density \nR² = ",r2,ifelse(pval<0.05," ***"," *")," ")
 
 
 glama_supp<-ggplot(all_tms_data_supp_cano_plot,aes(x=tree_density_2018,y=canopy_cover_glama))+

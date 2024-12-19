@@ -222,14 +222,14 @@ res.var$cos2
 inertia(pca_valle_1st)
 
 coord_pca<-data.table(pca_valle_1st$li)
-
+coord_pca <- cbind(coord_pca,pca_valle_1st)
 unique(all_tms_data_agg_fit$locality_id)
 coord_pca[,site:=(pca_data$site_ID)]
 
 coord_pca[,state:=ifelse(is.na(site),"no",ifelse(site%in% unique(all_tms_data_agg_fit$locality_id),"kept","Malfunction"))]
 
 a12<-ggplot(coord_pca[is.na(site)],aes(x=Axis1,y=Axis2))+
-  geom_point(alpha=0.025, size=0.4)+
+  geom_point(alpha=0.025, size=0.4,aes(color = ""))+
   geom_point(data=coord_pca[!is.na(site)],aes(color=state),size=1.5)+
   scale_color_manual(breaks=c("kept","Malfunction"),values=c("deepskyblue1","firebrick2"),label=c("Kept loggers","lost or discarded\nloggers"))+
   theme_bw()+labs(color="Logger state")
