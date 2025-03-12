@@ -12,7 +12,7 @@ Our results show that topography outweighed canopy cover in explaining growing s
 
 *Synthesis*. Our findings highlight a stronger role of topography compared to canopy cover on community composition in mountain forests via topoclimatic cooling of north-facing slopes and valley bottoms. The importance of topographic features to explain temperature cooling and diversity underpins their role as present and future microrefugia.
 
-**DOI:** no attribution
+**DOI:** [10.24072/pcjournal.519](https://doi.org/10.24072/pcjournal.519)
 
 
 This repo contains the raw dataset and the code used in the study "Topoclimate buffers floristic diversity from macroclimate in temperate mountain forests" currently *under review*
