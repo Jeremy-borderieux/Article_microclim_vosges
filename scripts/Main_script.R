@@ -59,7 +59,11 @@ library(myClim)
 folder<-file.path("data","microclimate_loggers")
 
 data_file<-grep("data_9",list.files(folder,full.names = T),value=T)
-local_table<- data.table(locality_id = coords$site_ID,elevation = coords$mnt_25_vosges,lon_wgs84= coords$x ,lat_wgs84=coords$y ,tz_offset= 120)
+local_table<- data.table(locality_id = coords$site_ID,
+                         elevation = coords$mnt_25_vosges,
+                         lon_wgs84= coords$x,
+                         lat_wgs84=coords$y,
+                         tz_offset= 120)
 local_table_total<-merge(local_table,meta_data[,c("site_ID","sensor_ID")],by.x="locality_id",by.y="site_ID")
 local_table_total[,path_to_file:=file.path(folder,paste0("data_",sensor_ID,"_0.csv"))]
 local_table_working_logs<-local_table_total[path_to_file%in%data_file,]
@@ -98,9 +102,12 @@ tms_error_flag <- data.table(mc_reshape_long(tms_error_flag))
 
 temp_env <- mc_agg(tms_data, 
                    fun=list(TMS_T3=c("mean_t","percentile","range_t")),
-                   period = "day", min_coverage = 0.95,percentiles = c(5,95),
+                   period = "day", 
+                   min_coverage = 0.95,
+                   percentiles = c(5,95),
                    custom_functions = list(mean_t=function(x) mean(x[x%between%  quantile(x,na.rm=T,probs=c(0.05,0.95))],na.rm=T) ,
-                                           range_t=function(x) diff(range(x[x%between%  quantile(x,na.rm=T,probs=c(0.05,0.95))],na.rm=T) )))
+                                           range_t=function(x) diff(range(x[x%between%  quantile(x,na.rm=T,probs=c(0.05,0.95))],na.rm=T) )),
+                   use_utc = F) # now correctly use local time instead of utc
 
 
 ## The temperature are then aggregated to the growing season of 2022, from 1st april to mid august
@@ -108,10 +115,11 @@ agg_growing_season<-mc_agg(temp_env,
                            fun=list(TMS_T3_mean_t="mean",TMS_T3_percentile95="mean",TMS_T3_percentile5="mean"),
                            period="custom",
                            custom_start ="04-01" ,
-                           custom_end = "08-15")
+                           custom_end = "08-15",
+                           use_utc = F)
 
 ## we transform the output from myclim to a data.table
-all_tms_data_agg<-data.table(mc_reshape_long(agg_growing_season))
+all_tms_data_agg<-data.table(mc_reshape_long(agg_growing_season),use_utc = F)
 all_tms_data_agg[,height:=NULL]
 all_tms_data_agg[,serial_number:=NULL]
 all_tms_data_agg[,datetime:=ymd(datetime)]
@@ -454,6 +462,9 @@ vege_plot_meta_data<-merge(vege_plot_meta_data,cti_indicator,by="plot_ID")
 
 ## use the microclimate model to predict the mean understory temperature
 ## and the contribution of each estimated parameter
+get_coef_mean<-summary(lm_agg_mean)$coefficients
+get_coef_max<-summary(lm_agg_max)$coefficients
+
 vege_plot_meta_data[,tree_density_2018:=tree_density_projected,]
 vege_plot_meta_data[,pred_T_mean:= predict(lm_agg_mean,newdata=vege_plot_meta_data)]
 vege_plot_meta_data[,pred_T_max:= predict(lm_agg_max,newdata=vege_plot_meta_data)]
